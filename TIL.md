@@ -48,3 +48,11 @@
   from google.colab import drive
   drive.mount('/gdrive', force_remount=True)
   ```
+
+
+# 2. 문장을 작은 단위로 쪼개기
+
+## 2-1. 토큰화란?
+- 토큰화: 문장 -> 토큰 시퀀스
+- 토큰화 개념을 넓은 의미로 해석할 때, 토큰 나누기 + 품사 부착
+- 
