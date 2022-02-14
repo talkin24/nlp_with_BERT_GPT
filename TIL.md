@@ -111,3 +111,5 @@
     - 한글은 한 글자가 3개의 유니코드 바이트로 표현됨
   - 말뭉치를 유니코드 바이트로 변환 -> 토큰화
   - 어휘집합 구축 -> return: vocab.json, merges
+- wordpiece: BERT 계열이 사용하는 토크나이저
+  - 어휘집합 구축 -> return: vocab.txt
