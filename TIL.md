@@ -113,3 +113,12 @@
   - 어휘집합 구축 -> return: vocab.json, merges
 - wordpiece: BERT 계열이 사용하는 토크나이저
   - 어휘집합 구축 -> return: vocab.txt
+
+## 2-4. 토큰화하기
+- vocab, merges 파일로 사전학습된 토크나이저 사용 가능(BERT는 vocab만)
+- GPT 토크나이저 
+  - 인풋: 문장, 패딩 기준, 토큰 기준 최대 길이, 문장 잘림 허용 옵션(truncation)
+  - 아웃풋: input_ids(토큰 인덱스), attention_mask(일반 토큰과 패딩 토큰 구분)
+- BERT 토크나이저
+  - 인풋: 문장, 패딩 기준, 토큰 기준 최대 길이, 문장 잘림 허용 옵션(truncation)
+  - 아웃풋: input_ids(토큰 인덱스), attention_mask(일반 토큰과 패딩 토큰 구분), token_type_ids(세그먼트 정보, 첫번째문장 = 0, 두번째 문장 = 1, ...)
