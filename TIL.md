@@ -192,3 +192,9 @@
   - 앞 뒤 문맥 모두 활용 가능
 - 모델 성능을 최대한 유지하면서 계산량 혹은 모델의 크기를 줄이려는 시도: distillaion, quatization, pruning, weight sharing
   
+
+## 3-6. 단어/문장을 벡터로 변환하기
+- BERT 모델의 입력값을 만들려면 토크나이저부터 선언해 두어야 함
+- 프리트레인 할 때 썼던 토크나이저를 그대로 사용해야 벡터 변환에 문제가 없음
+- 파이토치의 입력값 자료형은 파이토치에서 제공하는 텐서여야 함
+- model output의 속성에 last_hidden_state, pooler_output 존재
