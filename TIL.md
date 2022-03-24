@@ -209,5 +209,29 @@
 - 소프트맥수 함수에 입력 => 최종출력
 
 ## 4-2. 문서 분류 모델 학습하기
-- 문서분류 모델 실습
-- push error!!
+- 문서분류 모델 실습(kcbert-base모델을 NSMC 데이터로 파인튜닝)
+- TrainArguments의 각 인자 의미
+  ```python
+  args = ClassificationTrainArguments(
+    pretrained_model_name="beomi/kcbert-base",
+    downstream_corpus_name="nsmc",
+    downstream_model_dir="/gdrive/My Drive/nlpbook/checkpoint-doccls",
+    batch_size=32 if torch.cuda.is_available() else 4,
+    learning_rate=5e-5,
+    max_seq_length=128,
+    epochs=3,
+    tpu_cores=0 if torch.cuda.is_available() else 8,
+    seed=7,
+    )
+  ```
+  - pretrained_model_name: 사전학습된 언어 이름. 단 허깅페이스 모델 허브에 등록되어 있어야 함
+  - downstream_corpus_name: 다운스트림 데이터의 이름
+  - downstream_corpus_root_dir: 다운스트림 데이터를 내려받을 위치. 입력하지 않으면 `/root/Korpora`에 저장됨
+  - batch_size: 배치 크기. GPU를 선택했다면 32, TPU라면 4.
+  
+- 데이터 로더는 데이터셋이 보유하고 있는 인스턴스를 배치 크기만큼 뽑아서 자료형, 데이터 길이 등 정해진 형식에 맞춰 배치를 만들어줌
+- Dataset은 corpus의 문장과 레이블을 각각 tokenizer를 활영하여, 모델이 학습할 수 있는 형태(ClassificationFeatures; 4가지 정보)로 가공함
+  - input_ids: 인덱스로 변환된 토큰 시퀀스
+  - attention_mask: 해당 토큰이 패딩인지 아닌지
+  - token_type_ids: 세그먼트 정보(문서 구분); BERT모델의 특징; '이어진 문서인지 맞히기'
+  - label
