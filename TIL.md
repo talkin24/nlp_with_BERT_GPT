@@ -235,3 +235,13 @@
   - attention_mask: 해당 토큰이 패딩인지 아닌지
   - token_type_ids: 세그먼트 정보(문서 구분); BERT모델의 특징; '이어진 문서인지 맞히기'
   - label
+
+- 전체 인스턴스 중 배치 크깅에서 정의한만큼을 뽑아 Dataloader는 배치 형태로 가공(nlpbook.data_collator)
+- DataLoader에서 주목할 인자 2개
+  - `sampler=RandomSampler(train_dataset, replacement=False)`
+    - replacement는 복원추출 여부
+  - `collate_fn=nlpbook.data_collator`
+    - 뽑은 인스턴스를 배치로 만드는 역할
+    - 같은 배치에서 인스턴스가 여럿일 때, 이를 input_ids, attention_mask 등 종류별로 모으고 텐서로 변경
+- 평가용(validation) 데이터 로더의 경우, SequentialSampler를 사용함
+    - `sampler=SequentialSampler(val_dataset`
