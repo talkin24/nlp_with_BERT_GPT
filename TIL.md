@@ -245,3 +245,58 @@
     - 같은 배치에서 인스턴스가 여럿일 때, 이를 input_ids, attention_mask 등 종류별로 모으고 텐서로 변경
 - 평가용(validation) 데이터 로더의 경우, SequentialSampler를 사용함
     - `sampler=SequentialSampler(val_dataset`
+      - 평가 시에는 평가용 데이터 전체를 사용하므로 굳이 랜덤으로 구성할 이유가 없음
+
+- `BertForSequenceClassification`은 프리트레인을 마친 BERT 모델 위에 문서 분류용 태스크 모듈이 덧붙여진 형태의 모델 클래스
+- 허깅페이스에 등록된 모델이라면 별다른 코드 수정 없이 모델명만 바꿔 사용 가능(단, 토크나이저와 동일한 모델을 사용해야 함)
+
+- 태스크에는 모델, 옵티마이저, 학습과정 등이 정의돼 있음
+  -  `ClassificationTask`에는 옵티마이저, 러닝 레이트 스케쥴러가 정의되어 있음
+    - LR 스케줄러는 ExponentialLR을 사용함
+
+  - ```python
+      from transformers import PreTrainedModel
+      from transformers.optimization import AdamW
+      from ratsnlp.nlpbook.metrics import accuracy
+      from pytorch_lightning import LightningModule
+      from torch.optim.lr_scheduler import ExponentialLR
+      from ratsnlp.nlpbook.classification.arguments import ClassificationTrainArguments
+
+      class ClassificationTask(LightningModule):
+
+          def __init__(self,
+                      model: PreTrainedModel,
+                      args: ClassificationTrainArguments,
+          ):
+              super().__init__()
+              self.model = model
+              self.args = args
+
+          def configure_optimizers(self):
+              optimizer = AdamW(self.parameters(), lr=self.args.learning_rate)
+              scheduler = ExponentialLR(optimizer, gamma=0.9)
+              return {
+                  'optimizer': optimizer,
+                  'scheduler': scheduler,
+              }
+
+          def training_step(self, inputs, batch_idx):
+              # outputs: SequenceClassifierOutput
+              outputs = self.model(**inputs)
+              preds = outputs.logits.argmax(dim=-1)
+              labels = inputs["labels"]
+              acc = accuracy(preds, labels)
+              self.log("loss", outputs.loss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+              self.log("acc", acc, prog_bar=True, logger=True, on_step=True, on_epoch=False)
+              return outputs.loss
+
+          def validation_step(self, inputs, batch_idx):
+              # outputs: SequenceClassifierOutput
+              outputs = self.model(**inputs)
+              preds = outputs.logits.argmax(dim=-1)
+              labels = inputs["labels"]
+              acc = accuracy(preds, labels)
+              self.log("val_loss", outputs.loss, prog_bar=True, logger=True, on_step=False, on_epoch=True)
+              self.log("val_acc", acc, prog_bar=True, logger=True, on_step=False, on_epoch=True)
+              return outputs.loss
+      ```
