@@ -300,3 +300,8 @@
               self.log("val_acc", acc, prog_bar=True, logger=True, on_step=False, on_epoch=True)
               return outputs.loss
       ```
+      - configure_optimizers: 모델 학습에 필요한 Optimizer와 LR Scheduler를 정의. 다른 것들을 사용하려면 여기서 정의하면 됨
+      - train_step: 학습 과정에서 한 개의 미니배치가 입력됐을 때, 손실을 계산하는 과정을 정의
+      - validation_step: 평가 과정에서 한 개의 미니배치가 입력됐을 때, 손실을 계산하는 과정을 정의
+        - 각 스텝에서는 loss, logit, accuracy 등을 계산
+        - loss, accuracy 등의 정보를 log에 남기고 메소드를 종료
