@@ -322,3 +322,18 @@
 - 인풋: [CLS] + 전제 + [SEP] + 가설 + [SEP]
 - 아웃풋: [전제에 대해 가설이 참일 확률, 거짓일 확률, 중립일 확률]
 
+## 5-2. 문장 쌍 분류 모델 학습하기
+- kcbert-base 모델을 업스테이지가 공개한 KLUE-NLI 데이터로 파인튜닝
+- 문장 분류와 문장 쌍 분류는 동일한 Dataset을 활용
+  - ClassificationDataset 모듈
+    ```python
+    train_dataset = ClassificationDataset(
+      args=args,
+      corpus=corpus,
+      tokenizer=tokenizer,
+      mode="train",
+      )
+    ```
+  - 위 모듈은 동일한 인자임에도 아웃풋 형태가 약간 다름
+  - 첫문장은 CLS, SEP 토큰을 포함하여 토큰 수가 2개 증가
+  - 두번째 문장 이후로는 SEP 1개 증가
