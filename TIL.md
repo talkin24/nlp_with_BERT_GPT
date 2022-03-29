@@ -337,3 +337,39 @@
   - 위 모듈은 동일한 인자임에도 아웃풋 형태가 약간 다름
   - 첫문장은 CLS, SEP 토큰을 포함하여 토큰 수가 2개 증가
   - 두번째 문장 이후로는 SEP 1개 증가
+
+
+- PL에서 모델은 태스크에 포함된다!
+- trainer의 인자는 3가지: 태스크, 학습 데이터 로더, 평가 데이터 로더
+
+## 5-3. 학습 마친 모델을 실전 투입하기
+- 인퍼런스 시 모델 로드 순서
+  1. 체크 포인트 로드
+  ```python
+    fine_tuned_model_ckpt = torch.load(
+        args.downstream_model_checkpoint_fpath,
+        map_location=torch.device("cpu")
+    )
+  ```
+
+  2. 모델 설정 로드
+  ```python
+    pretrained_model_config = BertConfig.from_pretrained(
+        args.pretrained_model_name,
+        num_labels=fine_tuned_model_ckpt['state_dict']['model.classifier.bias'].shape.numel(),
+    )
+  ```
+  3. 모델 초기화
+  ```python
+  model = BertForSequenceClassification(pretrained_model_config)
+  ```
+  4. 체크포인트 주입
+  ```python
+  model.load_state_dict({k.replace("model.", ""): v for k, v in fine_tuned_model_ckpt['state_dict'].items()})
+  ```
+  5. 평가 모드로 전환(드롭아웃 등 학습 때만 사용하는 기법들 무효화)
+  ```python
+  model.eval()
+  ```
+
+  - 문장 쌍 분류는 두 문서 사이의 유사도 혹은 관련도를 따지는 검색 모델로도 발전시킬 수 있음!
