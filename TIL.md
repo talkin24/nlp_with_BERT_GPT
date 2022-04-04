@@ -418,4 +418,11 @@
   - 정답의 시작이 될 수 있는 토큰 들 중 시작일 확률(끝도 마찬가지)
 
 ## 7-2. 질의응답 모델 학습하기
-- 
+- 새로운 인자
+  - doc_stride: 지문에서 몇 개의 토큰을 슬라이딩 해가면서 데이터를 늘릴지 결정
+
+- KorQuADV1Corpus 구성
+  - question_text(질문)
+  - context_text(지문)
+  - answer_text(정답)
+  - start_position_character(정답의 시작 인덱스)
