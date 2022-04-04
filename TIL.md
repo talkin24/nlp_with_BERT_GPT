@@ -426,3 +426,15 @@
   - context_text(지문)
   - answer_text(정답)
   - start_position_character(정답의 시작 인덱스)
+
+- QADataset 구성
+  - input_ids: [CLS] 질문 [SEP] 지문 [SEP]
+  - attention_mask: 패딩 표시
+  - token_type_ids: 질문/지문 구분
+  - start_positions: 정답 시작
+  - end_positions: 정답 끝
+
+- QA 태스크에서 지문의 길이는 BERT 모델이 처리할 수 있는 max_seq_length 보다 긴 경우가 많음
+  - 따라서 질문은 그대로 두고 지문 일부를 편집하는 방식으로 학습 데이터를 만듦
+  - doc_stride가 64라면, 지문 앞부분 64개 토큰을 없애고 원래 지문 뒷부분에 이어지고 있던 64개 토큰을 가져와 붙임(다음 인스턴스에서)
+  - 당연히 정답 시퀀스도 삭제 될 수 있음. 이 경우 start_positions/end_positions는 모두 0
